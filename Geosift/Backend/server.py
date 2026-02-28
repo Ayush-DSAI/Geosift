@@ -27,11 +27,17 @@ console_handler.setFormatter(console_formatter)
 logger.addHandler(console_handler)
 
 app = FastAPI()
-
+origins = [
+    "https://ayush-dsai.github.io",  # Your GitHub Pages frontend URL
+    # You can add other origins here if needed, e.g., for local development:
+    # "http://localhost",
+    # "http://localhost:8000",
+    # "http://localhost:3000",
+]
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=origins,  # Allows all origins
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
@@ -85,7 +91,9 @@ class AnalyzeRequest(BaseModel):
         if v.lower() not in allowed:
             raise ValueError("duration must be short-term or long-term")
         return v.lower()
-
+@app.get("/")
+async def read_root():
+    return {"message": "Welcome to Geosift Backend API"}
 
 @app.post("/api/analyze", response_model=AnalyzeResponse)
 async def analyze(request: AnalyzeRequest):
